@@ -43,8 +43,8 @@ Options:
     --help, -h          Print this help text.
     --version, -v       Print version information.
     --ntp-server, -n    The ntp server to check. 
-    --warning, -w      The warning threshold. In milliseconds.
-    --critical, -c     The critical threshold. In milliseconds.
+    --warning, -w       The warning threshold. In milliseconds.
+    --critical, -c      The critical threshold. In milliseconds.
 
 Example:
     $SCRIPT
@@ -68,7 +68,7 @@ check_ntpd () {
             exit $CRITICAL
         fi
 
-        STARRED_SERVER=$(ntpq -p | grep "^*" |  awk '{print $1}' | sed 's/^\*//')
+        STARRED_SERVER=$(ntpq -p | grep "\*" |  awk '{print $1}' | sed 's/^\*//')
 
         if [ "$STARRED_SERVER" != "$NTP_SERVER" ]; then
             echo "WARNING: ntpd is running but not using the correct server | datetime=$(date +%d-%m-%YT%H:%M:%S%z)"
@@ -76,13 +76,13 @@ check_ntpd () {
         fi
 
         # check if time is in sync with the ntp server
-        DELAY=$(ntpq -p | grep "^*" | awk '{print $8}')
+        DELAY=$(ntpq -p | grep "\*" | awk '{print $8}')
         DELAY=${DELAY%.*}
         # check the offset is within the thresholds
-        if [ $DELAY -gt $CRITICAL_THRESHOLD ]; then
+        if [ "$DELAY" -gt "$CRITICAL_THRESHOLD" ]; then
             echo "CRITICAL: ntpd is running but not in sync | datetime=$(date +%d-%m-%YT%H:%M:%S%z) | delay=$DELAY"
             exit $CRITICAL
-        elif [ $DELAY -gt $WARNING_THRESHOLD ]; then
+        elif [ "$DELAY" -gt "$WARNING_THRESHOLD" ]; then
             echo "WARNING: ntpd is running but not in sync | datetime=$(date +%d-%m-%YT%H:%M:%S%z) | delay: $DELAY"
             exit $WARNING
         else
